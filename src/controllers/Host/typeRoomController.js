@@ -3,6 +3,8 @@ const propertiesModel = require("../../models/propertiesModel");
 
 const createNewTypeRoom = async (req, res) => {
   try {
+    console.log("Creating new type", req.body);
+    console.log("Creating new type", req.files);
     let price = req.body.price;
     const { property_id, images, typeOfRoom, roomNumber, amenities } = req.body;
 
@@ -13,7 +15,7 @@ const createNewTypeRoom = async (req, res) => {
       });
     }
 
-    if (!property_id || !typeOfRoom || !roomNumber || !price) {
+    if (!property_id || !typeOfRoom || !price) {
       return res.status(400).json({
         EC: 1,
         message: "Invalid request: Missing required fields",

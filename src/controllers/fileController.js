@@ -15,34 +15,42 @@ const postUploadSingleFile = async (req, res) => {
       "Only image, Word, and PDF files are allowed. Please check your file(s) (single)."
     );
   }
-  let result = await uploadFile.uploadSingleFile(req.files.file);
-  console.log(result);
-  return result;
+  let rl = await uploadFile.uploadSingleFile(req.files.file);
+  return rl;
   //   return res.status(200).json({
   //     EC: "ok",
   //   });
 };
 
 const postUploadMultipleFiles = async (req, res) => {
-  console.log(req.files);
-
-  // Check if files are provided and they are not empty
-  if (!req.files || Object.keys(req.files.file).length === 0) {
-    return res.status(400).send("No files were uploaded.");
-  }
-  if (Array.isArray(req.files.file)) {
-    for (const file of req.files.file) {
-      let mimeType = mime.lookup(file.name);
-      if (!allowedMimeTypes.includes(mimeType)) {
-        throw new Error(
-          "Only image, Word, and PDF files are allowed. Please check your file(s) (multiple)."
-        );
-      }
+  try {
+    // Kiểm tra nếu không có files nào được upload
+    if (!req.files || !req.files.file) {
+      return res.status(400).send("No files were uploaded.");
     }
-    let result = await uploadFile.uploadMultipleFiles(req.files.file);
-    return result;
-  } else {
-    return await postUploadSingleFile(req, res);
+
+    const files = req.files.file;
+
+    // Kiểm tra xem files là một mảng hay một file đơn lẻ
+    if (Array.isArray(files)) {
+      for (const file of files) {
+        let mimeType = mime.lookup(file.name);
+        if (!allowedMimeTypes.includes(mimeType)) {
+          throw new Error(
+            "Only image, Word, and PDF files are allowed. Please check your file(s) (multiple)."
+          );
+        }
+      }
+      let result = await uploadFile.uploadMultipleFiles(files);
+      return res.status(result.status).json(result.message);
+    } else {
+      const result = await postUploadSingleFile(req, res);
+      console.log(result);
+      return res.status(result.status).json(result.message);
+    }
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).send("An error occurred while uploading the files.");
   }
 };
 
@@ -69,6 +77,7 @@ const uploadImage = async (req, res) => {
 
   try {
     let result = await uploadFile.uploadImageUser(image);
+    console.log("Image uploaded successfully:", result);
     return res.status(200).json(result);
   } catch (error) {
     console.log("Error uploading image:", error);

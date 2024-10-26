@@ -2,6 +2,7 @@ const express = require("express");
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const checkToken = require("../middlewares/checktoken");
+const bookingController = require("../controllers/bookingController");
 const {
   postUploadMultipleFiles,
   uploadImage,
@@ -30,5 +31,8 @@ routerAPI.get("/account", authController.getAccount);
 routerAPI.get("/getAllUsers", userController.getAllUsers);
 routerAPI.get("/users/:userId", userController.getUsers);
 //routerAPI.delete("/deleteUser/:id", authController.deleteUser);
+
+// ----------- Booking logic --------------------
+routerAPI.get("/booking", bookingController.findRoomAvaily);
 
 module.exports = routerAPI; //export default

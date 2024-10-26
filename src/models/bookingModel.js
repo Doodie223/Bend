@@ -4,12 +4,17 @@ const BookingSchema = new mongoose.Schema(
   {
     propertyId: { type: mongoose.Schema.Types.ObjectId, ref: "Properties" },
     typeRoomId: { type: mongoose.Schema.Types.ObjectId, ref: "typeRoom" },
+    userBookId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     listRoom: { type: [String] },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    checkInDate: { type: Date },
-    checkOutDate: { type: Date },
+    checkInDate: { type: Date, required: true },
+    checkOutDate: { type: Date, required: true },
     totalPrice: { type: Number },
-    status: { type: String },
+    isPayment: { type: Boolean, default: false },
+    status: {
+      type: String,
+      enum: ["pending", "confirmed", "cancelled", "checked-in", "checked-out"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );

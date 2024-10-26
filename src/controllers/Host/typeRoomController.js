@@ -3,38 +3,44 @@ const propertiesModel = require("../../models/propertiesModel");
 
 const createNewTypeRoom = async (req, res) => {
   try {
-    console.log("Creating new type", req.body);
-    console.log("Creating new type", req.files);
-    let price = req.body.price;
-    const { property_id, images, typeOfRoom, roomNumber, amenities } = req.body;
+    const {
+      property_id,
+      images,
+      typeOfRoom,
+      listRoom,
+      amenities,
+      price,
+      maxAdults,
+      maxChildren,
+      area,
+    } = req.body;
 
-    if (!req.body || Object.keys(req.body).length === 0) {
-      return res.status(400).json({
-        EC: 1,
-        message: "Invalid request: No data provided",
-      });
-    }
-
-    if (!property_id || !typeOfRoom || !price) {
-      return res.status(400).json({
-        EC: 1,
-        message: "Invalid request: Missing required fields",
-      });
-    }
-
-    price = Number(price);
-    if (isNaN(price) || price <= 0) {
-      return res.status(400).json({
-        EC: 1,
-        message: "Invalid request: Price must be a positive number",
-      });
-    }
-
+    if (!property_id)
+      return res
+        .status(400)
+        .json({ EC: 1, message: "Missing required property_id" });
     const checkProperties = await propertiesModel.findById(property_id);
     if (!checkProperties) {
       return res.status(404).json({
         EC: 1,
         message: "Property not found",
+      });
+    }
+
+    const missingFields = [];
+    if (!images) missingFields.push("images");
+    if (!typeOfRoom) missingFields.push("typeOfRoom");
+    if (!listRoom) missingFields.push("listRoom");
+    if (!amenities) missingFields.push("amenities");
+    if (!price) missingFields.push("price");
+    if (!maxAdults) missingFields.push("maxAdults");
+    if (!maxChildren) missingFields.push("maxChildren");
+    if (!area) missingFields.push("area");
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        EC: 1,
+        message: "Missing required fields: " + missingFields.join(", "),
       });
     }
 
@@ -54,9 +60,12 @@ const createNewTypeRoom = async (req, res) => {
       property_id,
       images,
       typeOfRoom,
-      roomNumber,
+      listRoom,
       amenities,
       price,
+      maxAdults,
+      maxChildren,
+      area,
       status: false,
     });
 

@@ -9,6 +9,9 @@ const typeRoomSchema = new mongoose.Schema(
     amenities: { type: [String] },
     price: { type: Number },
     status: { type: Boolean },
+    maxAdults: { type: Number, required: true },
+    maxChildren: { type: Number, required: true },
+    area: { type: Number, required: true },
   },
   { timestamps: true }
 );

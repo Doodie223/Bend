@@ -33,8 +33,40 @@ const createProperty = async (req, res) => {
         message: "Host ID is required",
       });
     }
-    const { name, description, location, availability, address, images } =
-      req.body;
+
+    const { name, description, images, amenities, city } = req.body;
+
+    const missingFields = [];
+
+    // Validate required fields
+    if (!name) missingFields.push("name");
+    if (!description) missingFields.push("description");
+    if (!images) missingFields.push("images");
+    if (!amenities) missingFields.push("amenities");
+    if (!city) missingFields.push("city");
+    // if (!location?.district) missingFields.push("District in Location");
+    // if (!location?.ward) missingFields.push("Ward in Location");
+    // if (!location?.address) missingFields.push("Address in Location");
+    // if (!coordinates) missingFields.push("Coordinates");
+    // if (typeof coordinates?.latitude !== "number")
+    //   missingFields.push("Latitude (must be a number)");
+    // if (typeof coordinates?.longitude !== "number")
+    //   missingFields.push("Longitude (must be a number)");
+    // Validate the incoming location and coordinates
+    // if (!location || !coordinates) {
+    //   return res.status(400).json({
+    //     EC: 1,
+    //     message: "Location and coordinates are required",
+    //   });
+    // }
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        EC: 1,
+        message: "Missing required fields: " + missingFields.join(", "),
+      });
+    }
+
     const user = await userModel.findById(req.user.user_id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -45,12 +77,21 @@ const createProperty = async (req, res) => {
       name,
       description,
       images,
-      amenities: req.body.amenities,
-      location: address,
-      availability,
+      amenities,
+      location: {
+        city: city,
+        // district: location.district,
+        // ward: location.ward,
+        // address: location.address,
+      },
+      // coordinates: {
+      //   latitude: coordinates.latitude,
+      //   longitude: coordinates.longitude,
+      // },
       status: false,
       isCheck: false,
     });
+
     await newProperty.save();
     res.status(201).json({
       EC: 0,

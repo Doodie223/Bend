@@ -3,12 +3,20 @@ const mongoose = require("mongoose");
 const PropertiesSchema = new mongoose.Schema(
   {
     host_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    name: { type: String, required: true },
+    name: { type: String },
     description: { type: String },
     images: { type: [String] },
     amenities: { type: [String] },
-    location: { type: Object },
-    city: { type: String },
+    location: {
+      city: { type: String },
+      district: { type: String },
+      ward: { type: String },
+      address: { type: String },
+    },
+    coordinates: {
+      latitude: { type: Number },
+      longitude: { type: Number },
+    },
     status: { type: Boolean },
     isCheck: { type: Boolean },
   },

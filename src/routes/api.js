@@ -7,8 +7,9 @@ const {
   postUploadMultipleFiles,
   uploadImage,
 } = require("../controllers/fileController");
+const makeOtp = require("../services/verifyService");
+const { generateOtpForUser } = require("../controllers/Auth/verifyController");
 
-const multer = require("multer");
 const routerAPI = express.Router();
 
 routerAPI.post("/upload", postUploadMultipleFiles);
@@ -18,6 +19,8 @@ routerAPI.post("/image", uploadImage);
 routerAPI.get("/", (req, res) => {
   return res.status(200).json({ message: "Welcome to API" });
 });
+
+routerAPI.get("/testotp", generateOtpForUser);
 
 // ----------- Booking logic --------------------
 routerAPI.get("/booking", bookingController.findRoomAvaily);

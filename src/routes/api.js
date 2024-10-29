@@ -19,6 +19,11 @@ routerAPI.get("/", (req, res) => {
   return res.status(200).json({ message: "Welcome to API" });
 });
 
+// ----------- Booking logic --------------------
+routerAPI.get("/booking", bookingController.findRoomAvaily);
+
+routerAPI.post("/addBooking", bookingController.addBooking);
+
 routerAPI.post("/register", authController.createNewUser);
 routerAPI.post("/login", authController.loginUser);
 
@@ -31,8 +36,5 @@ routerAPI.get("/account", authController.getAccount);
 routerAPI.get("/getAllUsers", userController.getAllUsers);
 routerAPI.get("/users/:userId", userController.getUsers);
 //routerAPI.delete("/deleteUser/:id", authController.deleteUser);
-
-// ----------- Booking logic --------------------
-routerAPI.get("/booking", bookingController.findRoomAvaily);
 
 module.exports = routerAPI; //export default

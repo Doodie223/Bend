@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const clientSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -18,11 +18,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    role: {
-      type: String,
-      required: true,
-      enum: ["admin", "host"],
-    },
+    role: "client",
     phone: {
       type: String,
       required: false,
@@ -40,4 +36,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Client", clientSchema);

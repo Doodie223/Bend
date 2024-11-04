@@ -21,6 +21,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(fileUpload());
+
 //config req.body
 app.use(express.json()); // for json
 app.use(express.urlencoded({ extended: true })); // for form data

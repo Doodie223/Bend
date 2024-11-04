@@ -14,7 +14,7 @@ const {
 const findRoomAvaily = async (req, res) => {
   try {
     const { city, checkInDateStr, checkOutDateStr, numAdults, numChildren } =
-      req.body;
+      req.query;
 
     // Validate input fields
     const validationError = validateInputFields({
@@ -42,24 +42,11 @@ const findRoomAvaily = async (req, res) => {
       findTypeRoomsByCity,
       conflictingBookings
     );
-    const numberOfNights = calculateNumberOfNights(checkInDate, checkOutDate);
-    let remainingAdults = parseInt(numAdults, 10) || 0;
-    let remainingChildren = parseInt(numChildren, 10) || 0;
 
-    // 4. Check room can ok with customer
-    const suggestedHotels = suggestRooms(
-      remainingAdults,
-      remainingChildren,
-      availableRooms,
-      numberOfNights
-    );
     return res.status(200).json({
-      numberOfNights,
-      remainingAdults,
-      remainingChildren,
-      conflictingBookings,
-      availableRooms,
-      suggestedHotels,
+      EC: 0,
+      message: "Search room available",
+      data: availableRooms,
     });
   } catch (error) {
     console.log("Error from findRoom (Controller): ", error);

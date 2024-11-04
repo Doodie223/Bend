@@ -97,7 +97,7 @@ const uploadSingleFile = async (file) => {
   }
 };
 
-const uploadMultipleFiles = async (file) => {
+const uploadMultipleFilesApi = async (file) => {
   try {
     let uploadPath = path.resolve(__dirname, "../public/upload");
     let filePaths = []; // Mảng lưu tất cả các đường dẫn file
@@ -112,7 +112,8 @@ const uploadMultipleFiles = async (file) => {
 
       try {
         await file[i].mv(finalPath);
-        filePaths.push(finalPath); // Thêm đường dẫn của file vào mảng
+        // Thay đổi đường dẫn để trả về URL có thể truy cập
+        filePaths.push(`/public/upload/${finalName}`); // Thêm đường dẫn URL
         countSuccess++;
       } catch (error) {
         console.log(
@@ -130,7 +131,7 @@ const uploadMultipleFiles = async (file) => {
           EM: "Upload file successfully",
           EC: 0,
           DT: {
-            paths: filePaths, // Trả về tất cả các đường dẫn file
+            paths: filePaths, // Trả về tất cả các đường dẫn file dưới dạng URL
           },
         },
       };
@@ -155,8 +156,44 @@ const uploadMultipleFiles = async (file) => {
   }
 };
 
+const uploadMultipleFiles = async (file) => {
+  try {
+    let uploadPath = path.resolve(__dirname, "../public/upload");
+    let filePaths = [];
+    let countSuccess = 0;
+
+    for (let i = 0; i < file.length; i++) {
+      let extname = path.extname(file[i].name);
+      let basename = path.basename(file[i].name, extname);
+
+      let finalName = `${basename} - ${Date.now()}${extname}`;
+      let finalPath = `${uploadPath}/${finalName}`;
+
+      try {
+        await file[i].mv(finalPath);
+        filePaths.push(finalPath); // Thêm đường dẫn của file vào mảng
+        countSuccess++;
+      } catch (error) {
+        console.log(
+          `Failed to upload file: ${file[i].name}, error: ${JSON.stringify(
+            error
+          )}`
+        );
+      }
+    }
+    console.log(">>> Check Count: " + countSuccess);
+    console.log(">>> Check filePaths: " + filePaths);
+    if (countSuccess > 0) {
+      return { paths: filePaths };
+    }
+  } catch (error) {
+    console.log(">> Check error (service multiple): " + error);
+  }
+};
+
 module.exports = {
   uploadSingleFile,
   uploadMultipleFiles,
   uploadImageUser,
+  uploadMultipleFilesApi,
 };

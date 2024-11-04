@@ -41,7 +41,7 @@ const postUploadMultipleFiles = async (req, res) => {
           );
         }
       }
-      let result = await uploadFile.uploadMultipleFiles(files);
+      let result = await uploadFile.uploadMultipleFilesApi(files);
       return res.status(result.status).json(result.message);
     } else {
       const result = await postUploadSingleFile(req, res);

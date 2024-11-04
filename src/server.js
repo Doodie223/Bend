@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express"); //commonjs
 const configViewEngine = require("../src/configs/viewEngine");
 const cors = require("cors");
+const path = require("path");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
@@ -21,6 +22,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(fileUpload());
+app.use("/public", express.static(path.join(__dirname, "src/public")));
 
 //config req.body
 app.use(express.json()); // for json

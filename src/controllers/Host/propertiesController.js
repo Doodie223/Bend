@@ -1,5 +1,10 @@
 const propertiesModel = require("../../models/propertiesModel");
 const userModel = require("../../models/userModel");
+const uploadFile = require("../../services/uploadService");
+const mime = require("mime-types");
+const path = require("path");
+
+let allowedMimeTypes = ["image/jpeg", "image/png"];
 
 const getAllProperties = async (req, res) => {
   try {
@@ -33,32 +38,22 @@ const createProperty = async (req, res) => {
         message: "Host ID is required",
       });
     }
+    const user = await userModel.findById(req.user.user_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    const { name, description, images, amenities, city } = req.body;
+    const { name, description, amenities, city } = req.body;
 
     const missingFields = [];
 
     // Validate required fields
     if (!name) missingFields.push("name");
     if (!description) missingFields.push("description");
-    if (!images) missingFields.push("images");
+    if (!req.files.images || req.files.images === 0)
+      missingFields.push("images");
     if (!amenities) missingFields.push("amenities");
     if (!city) missingFields.push("city");
-    // if (!location?.district) missingFields.push("District in Location");
-    // if (!location?.ward) missingFields.push("Ward in Location");
-    // if (!location?.address) missingFields.push("Address in Location");
-    // if (!coordinates) missingFields.push("Coordinates");
-    // if (typeof coordinates?.latitude !== "number")
-    //   missingFields.push("Latitude (must be a number)");
-    // if (typeof coordinates?.longitude !== "number")
-    //   missingFields.push("Longitude (must be a number)");
-    // Validate the incoming location and coordinates
-    // if (!location || !coordinates) {
-    //   return res.status(400).json({
-    //     EC: 1,
-    //     message: "Location and coordinates are required",
-    //   });
-    // }
 
     if (missingFields.length > 0) {
       return res.status(400).json({
@@ -67,27 +62,38 @@ const createProperty = async (req, res) => {
       });
     }
 
-    const user = await userModel.findById(req.user.user_id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const isExistName = await propertiesModel.findOne({ name: name });
+    if (isExistName) {
+      return res.status(400).json({
+        EC: 1,
+        message: "Property name already exists",
+      });
+    }
+
+    const files = req.files.images;
+    let images = "";
+    if (Array.isArray(files)) {
+      for (const file of files) {
+        let mimeType = mime.lookup(file.name);
+        if (!allowedMimeTypes.includes(mimeType)) {
+          throw new Error(
+            "Only image,files are allowed. Please check your file(s) (multiple)."
+          );
+        }
+      }
+      let result = await uploadFile.uploadMultipleFilesApi(files);
+      images = result.message.DT.paths;
     }
 
     const newProperty = new propertiesModel({
       host_id: user._id,
       name,
       description,
-      images,
+      images: images,
       amenities,
       location: {
         city: city,
-        // district: location.district,
-        // ward: location.ward,
-        // address: location.address,
       },
-      // coordinates: {
-      //   latitude: coordinates.latitude,
-      //   longitude: coordinates.longitude,
-      // },
       status: false,
       isCheck: false,
     });
@@ -99,6 +105,7 @@ const createProperty = async (req, res) => {
       data: newProperty,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };

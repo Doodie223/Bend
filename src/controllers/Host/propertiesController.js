@@ -50,7 +50,6 @@ const createProperty = async (req, res) => {
       missingFields.push("images");
     if (!amenities) missingFields.push("amenities");
     if (!city) missingFields.push("city");
-    if (!address) missingFields.push("address");
 
     if (missingFields.length > 0) {
       return res.status(400).json({

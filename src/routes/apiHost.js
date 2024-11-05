@@ -8,12 +8,8 @@ const {
 } = require("../controllers/Host/propertiesController");
 
 const typeRoom = require("../controllers/Host/typeRoomController");
-
 //Middelware
 const upload = require("../middlewares/cloudinaryMiddleware");
-const {
-  validatePropertyCreation,
-} = require("../middlewares/Host/propertiesMiddleWare");
 
 const routerHostAPI = express.Router();
 routerHostAPI.get("/", (req, res) => {

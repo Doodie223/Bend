@@ -1,10 +1,5 @@
 const propertiesModel = require("../../models/propertiesModel");
 const userModel = require("../../models/userModel");
-const uploadFile = require("../../services/uploadService");
-const mime = require("mime-types");
-const path = require("path");
-
-let allowedMimeTypes = ["image/jpeg", "image/png"];
 
 const getAllProperties = async (req, res) => {
   try {
@@ -38,6 +33,7 @@ const createProperty = async (req, res) => {
         message: "Host ID is required",
       });
     }
+
     const user = await userModel.findById(req.user.user_id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -47,10 +43,10 @@ const createProperty = async (req, res) => {
 
     const missingFields = [];
 
-    // Validate required fields
+    // Kiểm tra các trường bắt buộc
     if (!name) missingFields.push("name");
     if (!description) missingFields.push("description");
-    if (!req.files.images || req.files.images === 0)
+    if (!req.files.images || req.files.images.length === 0)
       missingFields.push("images");
     if (!amenities) missingFields.push("amenities");
     if (!city) missingFields.push("city");
@@ -70,26 +66,14 @@ const createProperty = async (req, res) => {
       });
     }
 
-    const files = req.files.images;
-    let images = "";
-    if (Array.isArray(files)) {
-      for (const file of files) {
-        let mimeType = mime.lookup(file.name);
-        if (!allowedMimeTypes.includes(mimeType)) {
-          throw new Error(
-            "Only image,files are allowed. Please check your file(s) (multiple)."
-          );
-        }
-      }
-      let result = await uploadFile.uploadMultipleFilesApi(files);
-      images = result.message.DT.paths;
-    }
+    // Lấy đường dẫn ảnh
+    const images = req.files.images.map((file) => file.path);
 
     const newProperty = new propertiesModel({
       host_id: user._id,
       name,
       description,
-      images: images,
+      images, // Sử dụng đường dẫn ảnh đã upload
       amenities,
       location: {
         city: city,

@@ -5,13 +5,14 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const fileUpload = require("express-fileupload");
+
 // import connection to database
 const connection = require("../src/configs/database");
 // import api file
 const apiRoutes = require("../src/routes/api");
 const apiARouters = require("../src/routes/apiAdmin");
 const apiHRouters = require("../src/routes/apiHost");
+const testRoutes = require("../src/routes/testapi");
 // import controller
 
 const app = express();
@@ -21,8 +22,6 @@ const port = process.env.PORT || 8888;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(fileUpload());
-app.use("/public", express.static(path.join(__dirname, "src/public")));
 
 //config req.body
 app.use(express.json()); // for json
@@ -35,6 +34,7 @@ configViewEngine(app);
 app.use("/v1/api/", apiRoutes);
 app.use("/v1/apiAdmin/", apiARouters);
 app.use("/v1/apiHost/", apiHRouters);
+app.use("/test", testRoutes);
 
 (async () => {
   try {

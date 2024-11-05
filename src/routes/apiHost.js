@@ -9,8 +9,13 @@ const {
 
 const typeRoom = require("../controllers/Host/typeRoomController");
 
-const routerHostAPI = express.Router();
+//Middelware
+const upload = require("../middlewares/cloudinaryMiddleware");
+const {
+  validatePropertyCreation,
+} = require("../middlewares/Host/propertiesMiddleWare");
 
+const routerHostAPI = express.Router();
 routerHostAPI.get("/", (req, res) => {
   return res.status(200).json({ message: "Welcome to Host API" });
 });
@@ -20,7 +25,12 @@ routerHostAPI.all("*", checkToken, checkRoleHost);
 
 // Manager properties
 routerHostAPI.get("/allProperties", getAllProperties);
-routerHostAPI.post("/createProperties", createProperty);
+routerHostAPI.post(
+  "/createProperties",
+
+  upload.fields([{ name: "images", maxCount: 5 }]),
+  createProperty
+);
 routerHostAPI.delete("/deleteProperty/:id", deleteProperty);
 routerHostAPI.put("/editProperty/:id", updateProperty);
 

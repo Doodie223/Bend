@@ -3,7 +3,6 @@ const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const checkToken = require("../middlewares/checktoken");
 const bookingController = require("../controllers/bookingController");
-const { UploadImage } = require("../controllers/cloudinaryController");
 
 const upload = require("../middlewares/cloudinaryMiddleware");
 

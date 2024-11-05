@@ -39,7 +39,7 @@ const createProperty = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { name, description, amenities, city } = req.body;
+    const { name, description, amenities, city, address } = req.body;
 
     const missingFields = [];
 
@@ -50,6 +50,7 @@ const createProperty = async (req, res) => {
       missingFields.push("images");
     if (!amenities) missingFields.push("amenities");
     if (!city) missingFields.push("city");
+    if (!address) missingFields.push("address");
 
     if (missingFields.length > 0) {
       return res.status(400).json({
@@ -77,6 +78,7 @@ const createProperty = async (req, res) => {
       amenities,
       location: {
         city: city,
+        address: address,
       },
       status: false,
       isCheck: false,

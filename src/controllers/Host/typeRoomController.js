@@ -5,7 +5,6 @@ const createNewTypeRoom = async (req, res) => {
   try {
     const {
       property_id,
-      images,
       typeOfRoom,
       listRoom,
       amenities,
@@ -28,7 +27,6 @@ const createNewTypeRoom = async (req, res) => {
     }
 
     const missingFields = [];
-    if (!images) missingFields.push("images");
     if (!typeOfRoom) missingFields.push("typeOfRoom");
     if (!listRoom) missingFields.push("listRoom");
     if (!amenities) missingFields.push("amenities");
@@ -55,6 +53,8 @@ const createNewTypeRoom = async (req, res) => {
         message: "A TypeRoom with the same property_id already exists",
       });
     }
+
+    const images = req.files.images.map((file) => file.path);
 
     const newTypeRoom = new typeRoomModel({
       property_id,

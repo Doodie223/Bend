@@ -27,7 +27,6 @@ routerHostAPI.all("*", checkToken, checkRoleHost);
 routerHostAPI.get("/allProperties", getAllProperties);
 routerHostAPI.post(
   "/createProperties",
-
   upload.fields([{ name: "images", maxCount: 5 }]),
   createProperty
 );
@@ -35,7 +34,11 @@ routerHostAPI.delete("/deleteProperty/:id", deleteProperty);
 routerHostAPI.put("/editProperty/:id", updateProperty);
 
 // Manager Rooms
-routerHostAPI.post("/createTypeRoom", typeRoom.createNewTypeRoom);
+routerHostAPI.post(
+  "/createTypeRoom",
+  upload.fields([{ name: "images", maxCount: 5 }]),
+  typeRoom.createNewTypeRoom
+);
 routerHostAPI.get("/getAllTypeRoom", typeRoom.getAllTypeRooms);
 routerHostAPI.get("/getListP", typeRoom.getListP);
 routerHostAPI.get("/getRoomTypeByPId/:id", typeRoom.getTypeRoomById);

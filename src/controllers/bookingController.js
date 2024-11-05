@@ -15,7 +15,7 @@ const findRoomAvaily = async (req, res) => {
   try {
     const { city, checkInDateStr, checkOutDateStr, numAdults, numChildren } =
       req.query;
-
+    console.log("Check City: " + city);
     // Validate input fields
     const validationError = validateInputFields({
       city,

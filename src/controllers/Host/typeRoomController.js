@@ -222,11 +222,13 @@ const deleteTypeRoom = async (req, res) => {
     }
 
     res.status(200).json({
+      EC: 0,
       message: "TypeRoom deleted successfully",
       data: deletedTypeRoom,
     });
   } catch (error) {
     res.status(500).json({
+      EC: 1,
       message: "Error deleting TypeRoom",
       error: error.message,
     });

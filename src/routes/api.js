@@ -19,7 +19,7 @@ routerAPI.get("/testotp", generateOtpForUser);
 
 // ----------- Booking logic --------------------
 routerAPI.get("/booking", bookingController.findRoomAvaily);
-
+routerAPI.get("/hotelDetails", bookingController.getHotelDetails);
 routerAPI.post("/addBooking", bookingController.addBooking);
 
 routerAPI.post("/register", authController.createNewUser);

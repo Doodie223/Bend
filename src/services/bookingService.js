@@ -141,6 +141,73 @@ function suggestRooms(numAdults, numChildren, availableRooms, numNights) {
   return suggestedHotels;
 }
 
+// Get hotel details and available rooms
+const getHotelDetailsAndAvailableRooms = async (
+  hotelId,
+  checkInDate,
+  checkOutDate
+) => {
+  const hotel = await Properties.findById(hotelId);
+  const typeRooms = await TypeRoom.find({ property_id: hotelId });
+  if (!hotel) {
+    return { hotelDetails: null, availableRooms: [] };
+  }
+  console.log(hotel, typeRooms);
+
+  const conflictingBookings = await BookingModel.find({
+    propertyId: hotelId,
+    $or: [
+      {
+        checkInDate: { $lt: new Date(checkOutDate) },
+        checkOutDate: { $gt: new Date(checkInDate) },
+      },
+    ],
+  });
+
+  console.log(conflictingBookings);
+  const availableRooms = [];
+
+  if (conflictingBookings) {
+    const bookedRooms = new Set();
+    for (const booking of conflictingBookings) {
+      bookedRooms.add(...booking.listRoom);
+    }
+
+    // Create a list of available rooms
+    for (const typeRoom of typeRooms) {
+      const allRooms = typeRoom.listRoom;
+      const freeRooms = allRooms.filter((room) => !bookedRooms.has(room));
+
+      if (freeRooms.length > 0) {
+        availableRooms.push({
+          _id: typeRoom._id,
+          property_id: typeRoom.property_id,
+          images: typeRoom.images,
+          typeOfRoom: typeRoom.typeOfRoom,
+          listRoom: freeRooms,
+          amenities: typeRoom.amenities,
+          price: typeRoom.price,
+          status: typeRoom.status,
+          maxAdults: typeRoom.maxAdults,
+          maxChildren: typeRoom.maxChildren,
+          area: typeRoom.area,
+        });
+      }
+    }
+    return {
+      hotelDetails: hotel,
+      availableRooms: availableRooms,
+    };
+  }
+
+  console.log("availableRooms:", availableRooms);
+
+  return {
+    hotelDetails: hotel,
+    availableRooms: typeRooms,
+  };
+};
+
 module.exports = {
   validateInputFields,
   getPropertiesWithRooms,
@@ -148,4 +215,5 @@ module.exports = {
   filterAvailableRooms,
   calculateNumberOfNights,
   suggestRooms,
+  getHotelDetailsAndAvailableRooms,
 };

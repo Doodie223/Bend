@@ -7,8 +7,7 @@ const {
   getPropertiesWithRooms,
   getConflictingBookings,
   filterAvailableRooms,
-  calculateNumberOfNights,
-  suggestRooms,
+  getHotelDetailsAndAvailableRooms,
 } = require("../services/bookingService");
 
 const findRoomAvaily = async (req, res) => {
@@ -37,12 +36,12 @@ const findRoomAvaily = async (req, res) => {
       checkInDate,
       checkOutDate
     );
+    console.log(conflictingBookings);
     // 3. Check available room not booked
     const availableRooms = filterAvailableRooms(
       findTypeRoomsByCity,
       conflictingBookings
     );
-
     return res.status(200).json({
       EC: 0,
       message: "Search room available",
@@ -54,8 +53,44 @@ const findRoomAvaily = async (req, res) => {
   }
 };
 
+const getHotelDetails = async (req, res) => {
+  try {
+    const { hotelId, checkInDateStr, checkOutDateStr } = req.query;
+
+    // Kiểm tra tham số đầu vào
+    if (!hotelId || !checkInDateStr || !checkOutDateStr) {
+      return res.status(400).json({
+        EC: 1,
+        message:
+          "Missing required fields: hotelId, checkInDateStr, or checkOutDateStr",
+      });
+    }
+
+    const checkInDate = convertDateFormat(checkInDateStr);
+    const checkOutDate = convertDateFormat(checkOutDateStr);
+
+    // Lấy thông tin chi tiết của khách sạn và các phòng còn trống
+    const { hotelDetails, availableRooms } =
+      await getHotelDetailsAndAvailableRooms(
+        hotelId,
+        checkInDate,
+        checkOutDate
+      );
+
+    return res.status(200).json({
+      EC: 0,
+      message: "Hotel details retrieved successfully",
+      hotelDetails,
+      availableRooms,
+    });
+  } catch (error) {
+    console.log("Error from getHotelDetails (Controller): ", error);
+    return res.status(500).json("Error: " + error.message);
+  }
+};
+
 const addBooking = async (req, res) => {
-  const { checkInDateStr, checkOutDateStr, listRoom, typeRoomId, hotelId } =
+  const { checkInDateStr, checkOutDateStr, listRoom, typeRoomId, propertyId } =
     req.body;
 
   const checkInDate = convertDateFormat(checkInDateStr);
@@ -67,6 +102,7 @@ const addBooking = async (req, res) => {
       checkOutDate,
       listRoom,
       typeRoomId,
+      propertyId,
     });
 
     // Save the booking to the database
@@ -80,4 +116,4 @@ const addBooking = async (req, res) => {
   }
 };
 
-module.exports = { findRoomAvaily, addBooking };
+module.exports = { findRoomAvaily, addBooking, getHotelDetails };

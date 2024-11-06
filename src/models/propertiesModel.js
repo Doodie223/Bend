@@ -9,7 +9,7 @@ const PropertiesSchema = new mongoose.Schema(
     amenities: { type: [String] },
     location: {
       city: { type: String },
-      district: { type: String },
+      state: { type: String },
       ward: { type: String },
       address: { type: String },
     },

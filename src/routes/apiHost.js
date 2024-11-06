@@ -8,6 +8,11 @@ const {
 } = require("../controllers/Host/propertiesController");
 
 const typeRoom = require("../controllers/Host/typeRoomController");
+
+const {
+  sendOtpForPasswordChange,
+  verifyOtp,
+} = require("../controllers/Host/authController");
 //Middelware
 const upload = require("../middlewares/cloudinaryMiddleware");
 
@@ -15,6 +20,10 @@ const routerHostAPI = express.Router();
 routerHostAPI.get("/", (req, res) => {
   return res.status(200).json({ message: "Welcome to Host API" });
 });
+
+//auth API
+routerHostAPI.post("/sendOTP", sendOtpForPasswordChange);
+routerHostAPI.post("/verifyOTP", verifyOtp);
 
 // Delay middleware
 routerHostAPI.all("*", checkToken, checkRoleHost);

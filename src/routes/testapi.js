@@ -1,7 +1,12 @@
 const express = require("express");
 const upload = require("../middlewares/cloudinaryMiddleware");
+const { sendEmail, sendOtpMail } = require("../controllers/emailController");
 
 const testAPI = express.Router();
+
+testAPI.get("/", (req, res) => {
+  return res.status(200).json({ message: "Welcome to Test API" });
+});
 
 testAPI.post(
   "/uploadTest",
@@ -20,4 +25,6 @@ testAPI.post(
   }
 );
 
+testAPI.post("/sendEmail", sendEmail);
+testAPI.post("/sendOPTEmail", sendOtpMail);
 module.exports = testAPI;

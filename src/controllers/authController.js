@@ -93,108 +93,16 @@ const getAccount = async (req, res) => {
   return res.status(200).json(req.user);
 };
 
-const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+// const forgotPassword = async (req, res) => {
 
-  try {
-    // Kiểm tra xem người dùng có tồn tại không
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({
-        EC: 1,
-        EM: "User not found",
-      });
-    }
+// };
 
-    // Tạo mã OTP
-    const { otp, secret } = createOtp(); // Sử dụng hàm createOtp từ verifyService
-    user.otpSecret = secret;
-    user.otpCreatedAt = Date.now();
-    await user.save();
-
-    // Gửi mã OTP qua email
-    const mailOptions = {
-      from: process.env.EMAIL_FROM, // Địa chỉ email bạn muốn gửi từ
-      to: email,
-      subject: "Password Reset OTP",
-      text: `Your OTP for password reset is: ${otp}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return res.status(500).json({
-          EC: 1,
-          EM: "Error sending OTP email",
-        });
-      }
-      return res.status(200).json({
-        EC: 0,
-        EM: "OTP sent successfully to your email",
-      });
-    });
-  } catch (error) {
-    console.log(">> Error from forgotPassword (Controller): ", error);
-    return res.status(500).json({
-      EC: 1,
-      EM: "An unexpected error occurred. Please try again later.",
-    });
-  }
-};
-
-const resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({
-        EC: 1,
-        EM: "User not found",
-      });
-    }
-
-    // Kiểm tra xem OTP đã hết hạn chưa
-    if (Date.now() - user.otpCreatedAt > 5 * 60 * 1000) {
-      // 5 phút
-      return res.status(400).json({
-        EC: 1,
-        EM: "OTP has expired",
-      });
-    }
-
-    // Kiểm tra OTP
-    const isValid = checkOtp(otp, user.otpSecret);
-    if (!isValid) {
-      return res.status(400).json({
-        EC: 1,
-        EM: "Invalid OTP",
-      });
-    }
-
-    // Mã hóa mật khẩu mới và cập nhật
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    user.otpSecret = null;
-    user.otpCreatedAt = null;
-    await user.save();
-
-    return res.status(200).json({
-      EC: 0,
-      EM: "Password reset successfully",
-    });
-  } catch (error) {
-    console.log(">> Error from resetPassword (Controller): ", error);
-    return res.status(500).json({
-      EC: 1,
-      EM: "An unexpected error occurred. Please try again later.",
-    });
-  }
-};
+const resetPassword = async (req, res) => {};
 
 module.exports = {
   createNewUser,
   loginUser,
   getAccount,
-  forgotPassword,
+  //forgotPassword,
   resetPassword,
 };

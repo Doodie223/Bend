@@ -164,7 +164,6 @@ const getHotelDetailsAndAvailableRooms = async (
     ],
   });
 
-  console.log(conflictingBookings);
   const availableRooms = [];
 
   if (conflictingBookings) {
